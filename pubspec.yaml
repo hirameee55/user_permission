@@ -1,0 +1,27 @@
+name: user_permission
+description: "Flutter plugin for watching App Ops Manager. Not supported on iOS."
+version: 0.0.1
+repository: https://github.com/hirameee55/user_permission
+issue_tracker: https://github.com/hirameee55/user_permission/issues
+
+environment:
+  sdk: '>=3.3.1 <4.0.0'
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.hirameee.user_permission
+        pluginClass: UserPermissionPlugin

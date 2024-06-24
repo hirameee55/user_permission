@@ -9,8 +9,8 @@ class MethodChannelUserPermission extends UserPermissionPlatform {
       const MethodChannel('com.hirameee.plugin/user_permission');
 
   @override
-  Future<int?> checkOp(UserPermissionType type) async {
-    final state = await methodChannel.invokeMethod<int>('checkOp', {
+  Future<int?> state(UserPermissionType type) async {
+    final state = await methodChannel.invokeMethod<int>('state', {
       'type': type.name,
     });
     return state;

@@ -9,7 +9,7 @@ class MockUserPermissionPlatform
     with MockPlatformInterfaceMixin
     implements UserPermissionPlatform {
   @override
-  Future<int?> checkOp(UserPermissionType type) async => 1;
+  Future<int?> state(UserPermissionType type) async => 1;
 
   @override
   Future<int?> startWatching(UserPermissionType type, String? myClass) async =>
@@ -24,12 +24,12 @@ void main() {
     expect(initialPlatform, isInstanceOf<MethodChannelUserPermission>());
   });
 
-  test('checkOp', () async {
+  test('state', () async {
     UserPermission userPermission = UserPermission();
     MockUserPermissionPlatform fakePlatform = MockUserPermissionPlatform();
     UserPermissionPlatform.instance = fakePlatform;
 
-    expect(await userPermission.checkOp(UserPermissionType.usageStats), 1);
+    expect(await userPermission.state(UserPermissionType.usageStats), 1);
   });
 
   test('startWatching', () async {

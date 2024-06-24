@@ -12,7 +12,7 @@ void main() {
       platform.methodChannel,
       (methodCall) async {
         switch (methodCall.method) {
-          case 'checkOp':
+          case 'state':
             return 0;
 
           case 'startWatching':
@@ -29,8 +29,8 @@ void main() {
         .setMockMethodCallHandler(platform.methodChannel, null);
   });
 
-  test('checkOp', () async {
-    expect(await platform.checkOp(UserPermissionType.systemAlertWindow), 0);
+  test('state', () async {
+    expect(await platform.state(UserPermissionType.systemAlertWindow), 0);
   });
 
   test('startWatching', () async {

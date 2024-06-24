@@ -58,6 +58,13 @@ class _MyAppState extends State<MyApp> {
                   await _userPermission(UserPermissionType.writeSettings);
                 },
               ),
+              const SizedBox(height: 10),
+              OutlinedButton(
+                child: const Text('scheduleExactAlarm'),
+                onPressed: () async {
+                  await _userPermission(UserPermissionType.scheduleExactAlarm);
+                },
+              ),
             ],
           ),
         ),
@@ -66,7 +73,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _userPermission(UserPermissionType type) async {
-    await _permission.checkOp(type);
+    await _permission.state(type);
     await _permission.startWatching(type);
   }
 }

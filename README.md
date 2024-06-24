@@ -30,7 +30,7 @@ To use this plugin, add `user_permission` as a dependency in your pubspec.yaml f
 import 'package:user_permission/user_permission.dart';
 import 'package:user_permission/user_permission_type.dart';
 
-final state = await UserPermission().checkOp(UserPermissionType.usageStats);
+final state = await UserPermission().state(UserPermissionType.usageStats);
 ```
 
 ### Launch screen & Detect status change

@@ -3,4 +3,5 @@ enum UserPermissionType {
   systemAlertWindow,
   pictureInPicture,
   writeSettings,
+  scheduleExactAlarm,
 }

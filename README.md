@@ -44,15 +44,19 @@ final state = await UserPermission().startWatching(UserPermissionType.systemAler
 
 ### Status value
 
-The status is returned as an int.
+The status can be either `denied` or `granted`.  
+If denied, it's a good idea to ask the user for permission with `startWatching`.
 
-| Android parameters | value |
-| :-----: | :-----: |
-| [MODE_ALLOWED](https://developer.android.com/reference/android/app/AppOpsManager#MODE_ALLOWED) | 0 |
-| [MODE_IGNORED](https://developer.android.com/reference/android/app/AppOpsManager#MODE_IGNORED) | 1 |
-| [MODE_ERRORED](https://developer.android.com/reference/android/app/AppOpsManager#MODE_ERRORED) | 2 |
-| [MODE_DEFAULT](https://developer.android.com/reference/android/app/AppOpsManager#MODE_DEFAULT) | 3 |
-| [MODE_FOREGROUND](https://developer.android.com/reference/android/app/AppOpsManager#MODE_FOREGROUND) | 4 |
+```dart
+import 'package:user_permission/user_permission.dart';
+import 'package:user_permission/user_permission_type.dart';
+
+final userPermission = UserPermission();
+final state = await userPermission.state(UserPermissionType.usageStats);
+if (state.isDenied) {
+    await userPermission.startWatching(UserPermissionType.usageStats);
+}
+```
 
 ## Learn more
 

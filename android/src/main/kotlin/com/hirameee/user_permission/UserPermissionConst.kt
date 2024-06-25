@@ -5,12 +5,11 @@ import android.app.AlarmManager
 import android.app.AppOpsManager
 import android.os.Build
 import android.provider.Settings
-import androidx.annotation.RequiresApi
 
 enum class UserPermissionType(
     val typeName: String,
-    val ops: String,
-    val action: String
+    val stateName: String,
+    val settingAction: String
 ) {
     USAGE_STATS(
         "usageStats",
@@ -54,11 +53,9 @@ enum class UserPermissionType(
     }
 }
 
-enum class UserPermissionState(val id: Int) {
+enum class UserPermissionState(private val value: Int) {
     DENIED(0),
     GRANTED(1);
 
-    fun id(): Int {
-        return id
-    }
+    fun value(): Int = value
 }

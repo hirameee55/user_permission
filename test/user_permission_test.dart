@@ -9,11 +9,13 @@ class MockUserPermissionPlatform
     with MockPlatformInterfaceMixin
     implements UserPermissionPlatform {
   @override
-  Future<int?> state(UserPermissionType type) async => 1;
+  Future<UserPermissionState> state(UserPermissionType type) async =>
+      UserPermissionState.granted;
 
   @override
-  Future<int?> startWatching(UserPermissionType type, String? myClass) async =>
-      0;
+  Future<UserPermissionState> startWatching(
+          UserPermissionType type, String? myClass) async =>
+      UserPermissionState.denied;
 }
 
 void main() {
@@ -29,7 +31,8 @@ void main() {
     MockUserPermissionPlatform fakePlatform = MockUserPermissionPlatform();
     UserPermissionPlatform.instance = fakePlatform;
 
-    expect(await userPermission.state(UserPermissionType.usageStats), 1);
+    expect(await userPermission.state(UserPermissionType.usageStats),
+        UserPermissionState.granted);
   });
 
   test('startWatching', () async {
@@ -37,7 +40,7 @@ void main() {
     MockUserPermissionPlatform fakePlatform = MockUserPermissionPlatform();
     UserPermissionPlatform.instance = fakePlatform;
 
-    expect(
-        await userPermission.startWatching(UserPermissionType.usageStats), 0);
+    expect(await userPermission.startWatching(UserPermissionType.usageStats),
+        UserPermissionState.denied);
   });
 }

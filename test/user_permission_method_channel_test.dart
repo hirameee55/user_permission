@@ -30,13 +30,14 @@ void main() {
   });
 
   test('state', () async {
-    expect(await platform.state(UserPermissionType.systemAlertWindow), 0);
+    expect(await platform.state(UserPermissionType.systemAlertWindow),
+        UserPermissionState.denied);
   });
 
   test('startWatching', () async {
     expect(
         await platform.startWatching(
             UserPermissionType.systemAlertWindow, null),
-        1);
+        UserPermissionState.granted);
   });
 }

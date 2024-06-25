@@ -1,13 +1,13 @@
 package com.hirameee.user_permission
 
-import android.util.Log
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 
 class MethodCallHandlerImpl(
-    private var userPermission: UserPermission, private var intentSender: IntentSender
+    private var userPermission: UserPermission,
+    private var intentSender: IntentSender
 ) : MethodCallHandler {
     private var channel: MethodChannel? = null
 
@@ -54,7 +54,7 @@ class MethodCallHandlerImpl(
             UserPermissionType.PICTURE_IN_PICTURE_SETTINGS,
             UserPermissionType.WRITE_SETTINGS,
             -> {
-                userPermission.checkOp(permission.ops)
+                userPermission.checkOp(permission.stateName)
             }
 
             UserPermissionType.SCHEDULE_EXACT_ALARM,
@@ -62,15 +62,13 @@ class MethodCallHandlerImpl(
                 userPermission.canScheduleExactAlarms()
             }
         }
-        result.success(state.id)
+        result.success(state.value())
     }
 
     private fun startWatching(
-        permission: UserPermissionType,
-        myClass: String?,
-        result: MethodChannel.Result
+        permission: UserPermissionType, myClass: String?, result: MethodChannel.Result
     ) {
-        intentSender.send(permission.action)
+        intentSender.send(permission.settingAction)
 
         when (permission) {
             UserPermissionType.USAGE_STATS,
@@ -78,28 +76,27 @@ class MethodCallHandlerImpl(
             UserPermissionType.PICTURE_IN_PICTURE_SETTINGS,
             UserPermissionType.WRITE_SETTINGS,
             -> {
-                userPermission.startWatchingMode(permission.ops, object : UserPermissionCallback {
-                    override fun onChange() {
-                        intentSender.sendMyApp(myClass)
+                userPermission.startWatchingMode(
+                    permission.stateName,
+                    object : UserPermissionCallback {
+                        override fun onChange() {
+                            intentSender.sendMyApp(myClass)
 
-                        val state = userPermission.checkOp(permission.ops)
-                        result.success(state.id)
-                    }
-                })
+                            val state = userPermission.checkOp(permission.stateName)
+                            result.success(state.value())
+                        }
+                    })
             }
 
             UserPermissionType.SCHEDULE_EXACT_ALARM,
             -> {
-                Log.d("@@@", "111 ${permission.ops}")
-                userPermission.startWatchingBroadcast(
-                    permission.ops,
+                userPermission.startWatchingBroadcast(permission.stateName,
                     object : UserPermissionCallback {
                         override fun onChange() {
-                            Log.d("@@@", "222")
                             intentSender.sendMyApp(myClass)
 
                             val state = userPermission.canScheduleExactAlarms()
-                            result.success(state.id)
+                            result.success(state.value())
                         }
                     })
             }

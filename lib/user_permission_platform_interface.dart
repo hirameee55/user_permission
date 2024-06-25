@@ -13,11 +13,12 @@ abstract class UserPermissionPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<int?> state(UserPermissionType type) {
+  Future<UserPermissionState> state(UserPermissionType type) {
     throw UnimplementedError('state() has not been implemented.');
   }
 
-  Future<int?> startWatching(UserPermissionType type, String? myClass) {
+  Future<UserPermissionState> startWatching(
+      UserPermissionType type, String? myClass) {
     throw UnimplementedError('startWatching() has not been implemented.');
   }
 }

@@ -9,19 +9,22 @@ class MethodChannelUserPermission extends UserPermissionPlatform {
       const MethodChannel('com.hirameee.plugin/user_permission');
 
   @override
-  Future<int?> state(UserPermissionType type) async {
-    final state = await methodChannel.invokeMethod<int>('state', {
+  Future<UserPermissionState> state(UserPermissionType type) async {
+    final value = await methodChannel.invokeMethod<int>('state', {
       'type': type.name,
     });
-    return state;
+
+    return UserPermissionStateValue.statusByValue(value);
   }
 
   @override
-  Future<int?> startWatching(UserPermissionType type, String? myClass) async {
-    final state = await methodChannel.invokeMethod<int>('startWatching', {
+  Future<UserPermissionState> startWatching(
+      UserPermissionType type, String? myClass) async {
+    final value = await methodChannel.invokeMethod<int>('startWatching', {
       'type': type.name,
       'myClass': myClass,
     });
-    return state;
+
+    return UserPermissionStateValue.statusByValue(value);
   }
 }

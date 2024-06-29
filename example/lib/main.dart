@@ -65,6 +65,14 @@ class _MyAppState extends State<MyApp> {
                   await _userPermission(UserPermissionType.scheduleExactAlarm);
                 },
               ),
+              const SizedBox(height: 10),
+              OutlinedButton(
+                child: const Text('accessibilitySettings'),
+                onPressed: () async {
+                  await _userPermission(
+                      UserPermissionType.accessibilitySettings);
+                },
+              ),
             ],
           ),
         ),

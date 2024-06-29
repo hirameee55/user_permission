@@ -4,6 +4,7 @@ enum UserPermissionType {
   pictureInPicture,
   writeSettings,
   scheduleExactAlarm,
+  accessibilitySettings,
 }
 
 enum UserPermissionState {

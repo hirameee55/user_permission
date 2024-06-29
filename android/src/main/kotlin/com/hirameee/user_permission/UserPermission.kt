@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import android.view.accessibility.AccessibilityManager
 
 interface UserPermissionCallback {
     fun onChange()
@@ -17,6 +18,7 @@ interface UserPermissionCallback {
 class UserPermission {
     private lateinit var appOpsManager: AppOpsManager
     private lateinit var alarmManager: AlarmManager
+    private lateinit var accessibilityManager: AccessibilityManager
     private var context: Context? = null
     private var activity: Activity? = null
     private lateinit var callback: UserPermissionCallback
@@ -25,6 +27,8 @@ class UserPermission {
         this.context = context
         appOpsManager = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
         alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        accessibilityManager =
+            context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
     }
 
     fun delete() {
@@ -61,6 +65,10 @@ class UserPermission {
         return if (alarmManager.canScheduleExactAlarms()) UserPermissionState.GRANTED else UserPermissionState.DENIED
     }
 
+    fun accessibilityEnabled(): UserPermissionState {
+        return if (accessibilityManager.isEnabled) UserPermissionState.GRANTED else UserPermissionState.DENIED
+    }
+
     private val opChangeListener = AppOpsManager.OnOpChangedListener { _, _ ->
         callback.onChange()
     }
@@ -92,6 +100,12 @@ class UserPermission {
             } else {
                 it.registerReceiver(onChangeReceiver, intentFilter)
             }
+        }
+    }
+
+    fun startWatchingAccessibility(ops: String, callback: UserPermissionCallback) {
+        accessibilityManager.addAccessibilityStateChangeListener {
+            callback.onChange()
         }
     }
 }

@@ -61,6 +61,11 @@ class MethodCallHandlerImpl(
             -> {
                 userPermission.canScheduleExactAlarms()
             }
+
+            UserPermissionType.ACCESSIBILITY_SETTINGS,
+            -> {
+                userPermission.accessibilityEnabled()
+            }
         }
         result.success(state.value())
     }
@@ -68,7 +73,7 @@ class MethodCallHandlerImpl(
     private fun startWatching(
         permission: UserPermissionType, myClass: String?, result: MethodChannel.Result
     ) {
-        intentSender.send(permission.settingAction)
+        intentSender.send(permission.settingAction, permission.withPackage)
 
         when (permission) {
             UserPermissionType.USAGE_STATS,
@@ -96,6 +101,19 @@ class MethodCallHandlerImpl(
                             intentSender.sendMyApp(myClass)
 
                             val state = userPermission.canScheduleExactAlarms()
+                            result.success(state.value())
+                        }
+                    })
+            }
+
+            UserPermissionType.ACCESSIBILITY_SETTINGS,
+            -> {
+                userPermission.startWatchingAccessibility(permission.stateName,
+                    object : UserPermissionCallback {
+                        override fun onChange() {
+                            intentSender.sendMyApp(myClass)
+
+                            val state = userPermission.accessibilityEnabled()
                             result.success(state.value())
                         }
                     })

@@ -30,11 +30,13 @@ class IntentSender {
         }
     }
 
-    fun send(action: String) {
+    fun send(action: String, withPackage: Boolean) {
         try {
             activity?.let {
                 val intent = Intent(action)
-                intent.data = Uri.fromParts("package", it.packageName, null)
+                if (withPackage) {
+                    intent.data = Uri.fromParts("package", it.packageName, null)
+                }
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 it.startActivity(intent)
             }

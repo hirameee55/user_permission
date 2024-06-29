@@ -1,9 +1,21 @@
+/// Define user permissions for operations.
 enum UserPermissionType {
+  /// Usage access
   usageStats,
+
+  /// Display over other apps
   systemAlertWindow,
+
+  /// Picture-in-picture
   pictureInPicture,
+
+  /// Modify system settings
   writeSettings,
+
+  /// Alarm & reminders
   scheduleExactAlarm,
+
+  /// Accessibility
   accessibilitySettings,
 }
 

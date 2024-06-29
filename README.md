@@ -20,6 +20,17 @@ This plugin provides Android applications with the ability to obtain the status 
 | :-----: |
 |   ✅    |
 
+## Supported User Permissions
+
+| User Permission | Note |
+| :----- | :----- |
+| Usage access            | |
+| Display over other apps | |
+| Picture-in-picture      | |
+| Modify system settings  | |
+| Alarm & reminders       | When this user permission is turned off, your app process will be terminated. |
+| Accessibility           | When this user permission is turned off, your app process will be terminated. |
+
 ## Usage
 
 To use this plugin, add `user_permission` as a dependency in your pubspec.yaml file.

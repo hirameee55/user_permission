@@ -1,6 +1,6 @@
 name: user_permission
 description: "Flutter plugin for watching User Permission. Not supported on iOS."
-version: 0.0.2
+version: 0.1.0
 repository: https://github.com/hirameee55/user_permission
 issue_tracker: https://github.com/hirameee55/user_permission/issues
 

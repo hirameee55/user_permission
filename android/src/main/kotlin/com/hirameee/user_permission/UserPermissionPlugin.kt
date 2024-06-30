@@ -6,16 +6,15 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 
 class UserPermissionPlugin : FlutterPlugin, ActivityAware {
 
-    companion object{
+    companion object {
         const val TAG = "UserPermission"
     }
 
     private var methodCallHandler: MethodCallHandlerImpl
     private var userPermission: UserPermission = UserPermission()
-    private var intentSender: IntentSender = IntentSender()
 
     init {
-        methodCallHandler = MethodCallHandlerImpl(userPermission, intentSender)
+        methodCallHandler = MethodCallHandlerImpl(userPermission)
     }
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -30,12 +29,10 @@ class UserPermissionPlugin : FlutterPlugin, ActivityAware {
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         userPermission.setActivity(binding.activity)
-        intentSender.setActivity(binding.activity)
     }
 
     override fun onDetachedFromActivity() {
         userPermission.setActivity(null)
-        intentSender.setActivity(null)
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {

@@ -1,12 +1,13 @@
-package com.hirameee.user_permission
+package com.hirameee.user_permission.handler
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import com.hirameee.user_permission.UserPermissionPlugin
 
-class IntentSender {
+class IntentHandler {
     private var activity: Activity? = null
 
     fun setActivity(activity: Activity?) {

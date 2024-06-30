@@ -1,34 +1,32 @@
 package com.hirameee.user_permission
 
-import android.annotation.TargetApi
 import android.app.Activity
-import android.app.AlarmManager
-import android.app.AppOpsManager
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.Build
-import android.view.accessibility.AccessibilityManager
+import com.hirameee.user_permission.handler.AccessibilityHandler
+import com.hirameee.user_permission.handler.AlarmHandler
+import com.hirameee.user_permission.handler.AppOpsHandler
+import com.hirameee.user_permission.handler.IntentHandler
+import io.flutter.plugin.common.MethodChannel
 
 interface UserPermissionCallback {
-    fun onChange()
+    fun onChanged()
 }
 
 class UserPermission {
-    private lateinit var appOpsManager: AppOpsManager
-    private lateinit var alarmManager: AlarmManager
-    private lateinit var accessibilityManager: AccessibilityManager
+    private lateinit var intentHandler: IntentHandler
+    private lateinit var alarmHandler: AlarmHandler
+    private lateinit var appOpsHandler: AppOpsHandler
+    private lateinit var accessibilityHandler: AccessibilityHandler
     private var context: Context? = null
     private var activity: Activity? = null
-    private lateinit var callback: UserPermissionCallback
 
     fun init(context: Context) {
         this.context = context
-        appOpsManager = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-        alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        accessibilityManager =
-            context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+
+        this.intentHandler = IntentHandler()
+        this.alarmHandler = AlarmHandler(context)
+        this.appOpsHandler = AppOpsHandler(context)
+        this.accessibilityHandler = AccessibilityHandler(context)
     }
 
     fun delete() {
@@ -37,75 +35,85 @@ class UserPermission {
 
     fun setActivity(activity: Activity?) {
         this.activity = activity
+        this.intentHandler.setActivity(activity)
     }
 
-    fun checkOp(ops: String): UserPermissionState {
-        var state = AppOpsManager.MODE_DEFAULT
+    fun getState(permission: UserPermissionType, result: MethodChannel.Result) {
+        val state = when (permission) {
+            UserPermissionType.USAGE_STATS,
+            UserPermissionType.SYSTEM_ALERT_WINDOW,
+            UserPermissionType.PICTURE_IN_PICTURE_SETTINGS,
+            UserPermissionType.WRITE_SETTINGS,
+            -> {
+                activity?.let {
+                    appOpsHandler.checkOp(it, permission.stateName)
+                } ?: UserPermissionState.DENIED
+            }
 
-        activity?.let {
-            state = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                appOpsManager.unsafeCheckOpNoThrow(
-                    ops,
-                    android.os.Process.myUid(),
-                    it.packageName
-                )
-            } else {
-                appOpsManager.checkOpNoThrow(
-                    ops,
-                    android.os.Process.myUid(),
-                    it.packageName
-                )
+            UserPermissionType.SCHEDULE_EXACT_ALARM,
+            -> {
+                alarmHandler.canScheduleExactAlarms()
+            }
+
+            UserPermissionType.ACCESSIBILITY_SETTINGS,
+            -> {
+                accessibilityHandler.accessibilityEnabled()
             }
         }
-        return if (state == AppOpsManager.MODE_ALLOWED) UserPermissionState.GRANTED else UserPermissionState.DENIED
+        result.success(state.value())
     }
 
-    @TargetApi(Build.VERSION_CODES.S)
-    fun canScheduleExactAlarms(): UserPermissionState {
-        return if (alarmManager.canScheduleExactAlarms()) UserPermissionState.GRANTED else UserPermissionState.DENIED
-    }
+    fun startWatching(
+        permission: UserPermissionType, myClass: String?, result: MethodChannel.Result
+    ) {
+        intentHandler.send(permission.settingAction, permission.withPackage)
 
-    fun accessibilityEnabled(): UserPermissionState {
-        return if (accessibilityManager.isEnabled) UserPermissionState.GRANTED else UserPermissionState.DENIED
-    }
+        when (permission) {
+            UserPermissionType.USAGE_STATS,
+            UserPermissionType.SYSTEM_ALERT_WINDOW,
+            UserPermissionType.PICTURE_IN_PICTURE_SETTINGS,
+            UserPermissionType.WRITE_SETTINGS,
+            -> {
+                activity?.let {
+                    appOpsHandler.startWatchingMode(it, permission.stateName,
+                        object : UserPermissionCallback {
+                            override fun onChanged() {
+                                intentHandler.sendMyApp(myClass)
 
-    private val opChangeListener = AppOpsManager.OnOpChangedListener { _, _ ->
-        callback.onChange()
-    }
-
-    private val onChangeReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            callback.onChange()
-        }
-    }
-
-    fun startWatchingMode(ops: String, callback: UserPermissionCallback) {
-        activity?.let {
-            this.callback = callback
-
-            appOpsManager.stopWatchingMode(opChangeListener)
-            appOpsManager.startWatchingMode(ops, it.packageName, opChangeListener)
-        }
-    }
-
-    fun startWatchingBroadcast(ops: String, callback: UserPermissionCallback) {
-        context?.let {
-            this.callback = callback
-
-            val intentFilter = IntentFilter()
-            intentFilter.addAction(ops)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.registerReceiver(onChangeReceiver, intentFilter, Context.RECEIVER_EXPORTED)
-            } else {
-                it.registerReceiver(onChangeReceiver, intentFilter)
+                                val state = appOpsHandler.checkOp(it, permission.stateName)
+                                result.success(state.value())
+                            }
+                        })
+                }
             }
-        }
-    }
 
-    fun startWatchingAccessibility(ops: String, callback: UserPermissionCallback) {
-        accessibilityManager.addAccessibilityStateChangeListener {
-            callback.onChange()
+            UserPermissionType.SCHEDULE_EXACT_ALARM,
+            -> {
+                context?.let {
+                    alarmHandler.startWatchingBroadcast(it, permission.stateName,
+                        object : UserPermissionCallback {
+                            override fun onChanged() {
+                                intentHandler.sendMyApp(myClass)
+
+                                val state = alarmHandler.canScheduleExactAlarms()
+                                result.success(state.value())
+                            }
+                        })
+                }
+            }
+
+            UserPermissionType.ACCESSIBILITY_SETTINGS,
+            -> {
+                accessibilityHandler.startWatchingAccessibility(permission.stateName,
+                    object : UserPermissionCallback {
+                        override fun onChanged() {
+                            intentHandler.sendMyApp(myClass)
+
+                            val state = accessibilityHandler.accessibilityEnabled()
+                            result.success(state.value())
+                        }
+                    })
+            }
         }
     }
 }

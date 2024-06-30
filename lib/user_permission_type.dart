@@ -13,6 +13,8 @@ enum UserPermissionType {
   writeSettings,
 
   /// Alarm & reminders
+  ///
+  /// Only supported on Android API 31+.
   scheduleExactAlarm,
 
   /// Accessibility

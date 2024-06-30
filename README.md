@@ -24,12 +24,13 @@ This plugin provides Android applications with the ability to obtain the status 
 
 | User Permission | Supported API Level | Note |
 | :----- | :----- | :----- |
-| Usage access            | 23+ | |
-| Display over other apps | 23+ | |
-| Picture-in-picture      | 23+ | |
-| Modify system settings  | 23+ | |
-| Alarm & reminders       | 31+ | When this user permission is turned off, your app process will be terminated. |
-| Accessibility           | 23+ | When this user permission is turned off, your app process will be terminated. |
+| Usage access                       | 23+ | |
+| Display over other apps            | 23+ | |
+| Picture-in-picture                 | 23+ | |
+| Modify system settings             | 23+ | |
+| Alarm & reminders                  | 31+ | When this user permission is turned off, your app process will be terminated. |
+| Accessibility                      | 23+ | When this user permission is turned off, your app process will be terminated. |
+| Notification read, reply & control | 23+ | |
 
 ## Usage
 

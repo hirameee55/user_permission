@@ -19,6 +19,9 @@ enum UserPermissionType {
 
   /// Accessibility
   accessibilitySettings,
+
+  /// Notification read, reply & control
+  notificationListenerService,
 }
 
 enum UserPermissionState {

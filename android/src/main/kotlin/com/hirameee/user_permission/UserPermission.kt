@@ -6,6 +6,7 @@ import com.hirameee.user_permission.handler.AccessibilityHandler
 import com.hirameee.user_permission.handler.AlarmHandler
 import com.hirameee.user_permission.handler.AppOpsHandler
 import com.hirameee.user_permission.handler.IntentHandler
+import com.hirameee.user_permission.handler.NotificationHandler
 import io.flutter.plugin.common.MethodChannel
 
 interface UserPermissionCallback {
@@ -17,6 +18,7 @@ class UserPermission {
     private lateinit var alarmHandler: AlarmHandler
     private lateinit var appOpsHandler: AppOpsHandler
     private lateinit var accessibilityHandler: AccessibilityHandler
+    private lateinit var notificationHandler: NotificationHandler
     private var context: Context? = null
     private var activity: Activity? = null
 
@@ -27,6 +29,7 @@ class UserPermission {
         this.alarmHandler = AlarmHandler(context)
         this.appOpsHandler = AppOpsHandler(context)
         this.accessibilityHandler = AccessibilityHandler(context)
+        this.notificationHandler = NotificationHandler(context)
     }
 
     fun delete() {
@@ -38,7 +41,10 @@ class UserPermission {
         this.intentHandler.setActivity(activity)
     }
 
-    fun getState(permission: UserPermissionType, result: MethodChannel.Result) {
+    fun getState(
+        permission: UserPermissionType,
+        result: MethodChannel.Result
+    ) {
         val state = when (permission) {
             UserPermissionType.USAGE_STATS,
             UserPermissionType.SYSTEM_ALERT_WINDOW,
@@ -59,14 +65,23 @@ class UserPermission {
             -> {
                 accessibilityHandler.accessibilityEnabled()
             }
+
+            UserPermissionType.NOTIFICATION_LISTENER_SERVICE,
+            -> {
+                activity?.let {
+                    notificationHandler.isNotificationPolicyAccessGranted(it)
+                } ?: UserPermissionState.DENIED
+            }
         }
         result.success(state.value())
     }
 
     fun startWatching(
-        permission: UserPermissionType, myClass: String?, result: MethodChannel.Result
+        permission: UserPermissionType,
+        myClass: String?,
+        result: MethodChannel.Result
     ) {
-        intentHandler.send(permission.settingAction, permission.withPackage)
+        intentHandler.send(permission)
 
         when (permission) {
             UserPermissionType.USAGE_STATS,
@@ -113,6 +128,13 @@ class UserPermission {
                             result.success(state.value())
                         }
                     })
+            }
+
+            UserPermissionType.NOTIFICATION_LISTENER_SERVICE,
+            -> {
+                context?.let {
+                    notificationHandler.aaa(it)
+                }
             }
         }
     }

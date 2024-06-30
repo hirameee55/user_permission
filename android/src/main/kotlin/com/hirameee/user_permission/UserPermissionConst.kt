@@ -51,7 +51,18 @@ enum class UserPermissionType(
         "",
         Settings.ACTION_ACCESSIBILITY_SETTINGS,
         false,
+    ),
+    NOTIFICATION_LISTENER_SERVICE(
+        "notificationListenerService",
+        "",
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS
+        } else {
+            Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+        },
+        false,
     );
+
 
     companion object {
         fun getItem(name: String): UserPermissionType? {

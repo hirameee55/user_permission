@@ -73,6 +73,14 @@ class _MyAppState extends State<MyApp> {
                       UserPermissionType.accessibilitySettings);
                 },
               ),
+              const SizedBox(height: 10),
+              OutlinedButton(
+                child: const Text('notificationListenerService'),
+                onPressed: () async {
+                  await _userPermission(
+                      UserPermissionType.notificationListenerService);
+                },
+              ),
             ],
           ),
         ),
